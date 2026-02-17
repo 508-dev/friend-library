@@ -1,0 +1,48 @@
+{% if items %}
+    <div class="gallery">
+        {% for item in items %}
+            <div class="gallery-item">
+                <div class="gallery-item-image">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                    {% else %}
+                        &#128230;
+                    {% endif %}
+                </div>
+                <div class="gallery-item-content">
+                    <h3 class="gallery-item-title">{{ item.title }}</h3>
+                    {% if item.short_description %}
+                        <p class="gallery-item-desc">{{ item.short_description }}</p>
+                    {% endif %}
+
+                    {% if item.borrow_time_limit %}
+                        <p class="borrow-limit text-muted">
+                            <small>Borrow limit: {{ item.borrow_time_limit }}</small>
+                        </p>
+                    {% endif %}
+
+                    {% if item.is_currently_borrowed %}
+                        <div class="item-status-borrowed">
+                            <span class="badge badge-borrowed">Currently Borrowed</span>
+                            {% if owner.show_borrower_name and item.current_borrow %}
+                                <span class="text-muted">by {{ item.current_borrow.borrower_name }}</span>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="gallery-item-actions">
+                            {% include "library/public/partials/request_button.html" %}
+                        </div>
+                    {% endif %}
+
+                    <a href="{% url 'library:public_item_detail' lending_hash item.id %}" class="btn btn-small btn-secondary mt-sm">
+                        More Info
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state card">
+        <p>No items available to borrow right now.</p>
+    </div>
+{% endif %}

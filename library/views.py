@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 from .forms import LoginForm, RegistrationForm, UserSettingsForm, ItemForm
-from .models import Item, Borrow
+from .models import User, Item, Borrow
 
 
 def home(request):
@@ -206,4 +206,134 @@ def item_toggle_availability_view(request, item_id):
         # Return updated button HTML for HTMX swap
         return render(request, "library/partials/item_availability_button.html", {
             "item": item,
+        })
+
+
+# =============================================================================
+# Public Lending Pages (no login required)
+# =============================================================================
+
+def public_lending_page(request, lending_hash):
+    """Public gallery view of a user's lending library."""
+    owner = get_object_or_404(User, lending_hash=lending_hash, is_approved=True)
+
+    # Get items based on owner's visibility settings
+    if owner.show_borrowed_items:
+        # Show all available items (including currently borrowed)
+        items = owner.items.filter(is_available=True)
+    else:
+        # Only show items that are available AND not currently borrowed
+        items = owner.items.filter(
+            is_available=True
+        ).exclude(
+            borrows__status=Borrow.Status.LENT_OUT
+        )
+
+    # Get borrower name from session or cookie
+    borrower_name = request.session.get(f"borrower_name_{lending_hash}", "")
+
+    context = {
+        "owner": owner,
+        "items": items,
+        "borrower_name": borrower_name,
+        "lending_hash": lending_hash,
+    }
+    return render(request, "library/public/gallery.html", context)
+
+
+def public_item_detail(request, lending_hash, item_id):
+    """Public detail view of a single item."""
+    owner = get_object_or_404(User, lending_hash=lending_hash, is_approved=True)
+    item = get_object_or_404(Item, id=item_id, owner=owner, is_available=True)
+
+    # Get borrower name from session
+    borrower_name = request.session.get(f"borrower_name_{lending_hash}", "")
+
+    # Get lending history if owner allows it
+    lending_history = None
+    if owner.show_lending_history:
+        lending_history = item.borrows.filter(
+            status=Borrow.Status.RETURNED
+        ).order_by("-returned_at")
+
+    context = {
+        "owner": owner,
+        "item": item,
+        "borrower_name": borrower_name,
+        "lending_hash": lending_hash,
+        "lending_history": lending_history,
+    }
+    return render(request, "library/public/item_detail.html", context)
+
+
+def public_set_borrower_name(request, lending_hash):
+    """HTMX endpoint to set borrower name in session."""
+    owner = get_object_or_404(User, lending_hash=lending_hash, is_approved=True)
+
+    if request.method == "POST":
+        borrower_name = request.POST.get("borrower_name", "").strip()
+        request.session[f"borrower_name_{lending_hash}"] = borrower_name
+
+        # Return updated gallery with request buttons enabled/disabled
+        if owner.show_borrowed_items:
+            items = owner.items.filter(is_available=True)
+        else:
+            items = owner.items.filter(
+                is_available=True
+            ).exclude(
+                borrows__status=Borrow.Status.LENT_OUT
+            )
+
+        return render(request, "library/public/partials/gallery_items.html", {
+            "owner": owner,
+            "items": items,
+            "borrower_name": borrower_name,
+            "lending_hash": lending_hash,
+        })
+
+
+def public_request_borrow(request, lending_hash, item_id):
+    """HTMX endpoint to request borrowing an item."""
+    owner = get_object_or_404(User, lending_hash=lending_hash, is_approved=True)
+    item = get_object_or_404(Item, id=item_id, owner=owner, is_available=True)
+
+    borrower_name = request.session.get(f"borrower_name_{lending_hash}", "").strip()
+
+    if request.method == "POST" and borrower_name:
+        # Check if item is already borrowed
+        if item.is_currently_borrowed:
+            return render(request, "library/public/partials/request_button.html", {
+                "item": item,
+                "lending_hash": lending_hash,
+                "borrower_name": borrower_name,
+                "error": "This item is currently borrowed.",
+            })
+
+        # Check for existing pending request from same borrower
+        existing = Borrow.objects.filter(
+            item=item,
+            borrower_name__iexact=borrower_name,
+            status__in=[Borrow.Status.REQUESTED, Borrow.Status.APPROVED],
+        ).exists()
+
+        if existing:
+            return render(request, "library/public/partials/request_button.html", {
+                "item": item,
+                "lending_hash": lending_hash,
+                "borrower_name": borrower_name,
+                "already_requested": True,
+            })
+
+        # Create borrow request
+        Borrow.objects.create(
+            item=item,
+            borrower_name=borrower_name,
+            status=Borrow.Status.REQUESTED,
+        )
+
+        return render(request, "library/public/partials/request_button.html", {
+            "item": item,
+            "lending_hash": lending_hash,
+            "borrower_name": borrower_name,
+            "just_requested": True,
         })

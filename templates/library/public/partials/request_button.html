@@ -1,0 +1,22 @@
+{% if just_requested %}
+    <span class="request-success">
+        <span class="badge badge-available">Request Sent!</span>
+    </span>
+{% elif already_requested %}
+    <span class="request-pending">
+        <span class="badge badge-borrowed">Already Requested</span>
+    </span>
+{% elif error %}
+    <span class="request-error text-muted">{{ error }}</span>
+{% elif borrower_name %}
+    <button type="button"
+            class="btn btn-primary"
+            hx-post="{% url 'library:public_request_borrow' lending_hash item.id %}"
+            hx-swap="outerHTML">
+        Request to Borrow
+    </button>
+{% else %}
+    <button type="button" class="btn btn-primary" disabled title="Enter your name first">
+        Request to Borrow
+    </button>
+{% endif %}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ owner.username }}'s Library{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="public-page" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <header class="public-header">
+        <div class="container">
+            <h1 class="public-title">{{ owner.username }}'s Library</h1>
+            <p class="public-subtitle">Browse and borrow</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>Powered by <a href="{% url 'library:home' %}">Stuff for Friends</a></p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

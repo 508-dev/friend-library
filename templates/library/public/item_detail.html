@@ -1,0 +1,81 @@
+{% extends "library/public/base_public.html" %}
+
+{% block title %}{{ item.title }} - {{ owner.username }}'s Library{% endblock %}
+
+{% block content %}
+<div class="public-item-detail">
+    <a href="{% url 'library:public_lending' lending_hash %}" class="back-link">&larr; Back to gallery</a>
+
+    <div class="item-detail-card card mt-md">
+        <div class="item-detail-layout">
+            <div class="item-detail-image">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                {% else %}
+                    <div class="no-image-large">&#128230;</div>
+                {% endif %}
+            </div>
+
+            <div class="item-detail-info">
+                <h1>{{ item.title }}</h1>
+
+                {% if item.short_description %}
+                    <p class="item-short-desc">{{ item.short_description }}</p>
+                {% endif %}
+
+                {% if item.borrow_time_limit %}
+                    <p class="borrow-limit">
+                        <strong>Borrow limit:</strong> {{ item.borrow_time_limit }}
+                    </p>
+                {% endif %}
+
+                {% if item.is_currently_borrowed %}
+                    <div class="item-status-section">
+                        <span class="badge badge-borrowed">Currently Borrowed</span>
+                        {% if owner.show_borrower_name and item.current_borrow %}
+                            <span class="text-muted">by {{ item.current_borrow.borrower_name }}</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="item-request-section mt-lg">
+                        {% if borrower_name %}
+                            <p class="text-muted mb-sm">Requesting as: <strong>{{ borrower_name }}</strong></p>
+                        {% else %}
+                            <p class="text-muted mb-sm">
+                                <a href="{% url 'library:public_lending' lending_hash %}">Enter your name</a> to request this item.
+                            </p>
+                        {% endif %}
+                        {% include "library/public/partials/request_button.html" %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if item.long_description %}
+            <div class="item-long-desc mt-lg">
+                <h3>Description</h3>
+                <p>{{ item.long_description|linebreaks }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if lending_history %}
+        <section class="lending-history card mt-lg">
+            <h3>Lending History</h3>
+            <ul class="history-list">
+                {% for borrow in lending_history %}
+                    <li>
+                        {% if owner.show_history_borrower_names %}
+                            <strong>{{ borrow.borrower_name }}</strong> -
+                        {% endif %}
+                        Borrowed {{ borrow.lent_at|date:"M j, Y" }}
+                        {% if borrow.returned_at %}
+                            &rarr; Returned {{ borrow.returned_at|date:"M j, Y" }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}
