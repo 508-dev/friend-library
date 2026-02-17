@@ -14,11 +14,13 @@ For example, if you have a collection of CDs you don't often listen to, you can 
 
 The front page of the app when not logged in is mildly marketing-esque, demonstrating the features of the app in brief, but this isn't the main marketing page so this shouldn't be too prominent. Mostly this page is designed to get the user to login or request registration against the given instance of the app.
 
+The root user has access to Django admin (`/admin/`) to approve pending user registrations and perform system administration.
+
 Once logged in, a user will be faced with an overview page showing a shortlist of requested borrows, any ongoing lendings, and a general overview of how much stuff they have on offer to their friends. This view has quick access to add new stuff.
 
 Prominently displayed is a URL like `lending.example.com/{{hash}}`, which is a given user's private lending page. For now, there's no other authentication to view a given user's lending page.
 
-If friends view the private lending page link, they're taken to a gallery-like list view of things that given user is lending out. There's an input box at the top prominently displayed for them to enter their name. All "request borrow" buttons are disabled until the user's name is in that input box. Each gallery item has a "request borrow" button, as well as showing some basic information about the item. Optionally per the user's preferences, the gallery shows lent items and optionally, who is borrowing currently unavailable items.
+If friends view the private lending page link, they're taken to a gallery-like list view of things that given user is lending out. There's an input box at the top prominently displayed for them to enter their name (honor-based, no verification - this is a casual app for real-life friends who will do in-person handovers). All "request borrow" buttons are disabled until the user's name is in that input box. Each gallery item has a "request borrow" button, as well as showing some basic information about the item. Optionally per the user's preferences, the gallery shows lent items and optionally, who is borrowing currently unavailable items.
 
 Gallery items have a detail view, accessible by clicking a "more info..." button. This opens the gallery item in its own page such as `lending.example.com/{{hash}}/{{item_id}}`. This shows all available information about the object, as well as optionally per the given users' preferences, lending history for the object.
 
@@ -29,7 +31,7 @@ The logged in user also has a setting page where they can set the following sett
 3. Whether friends can see lending history of an item in its detail page
 4. (only enabled if 3 is toggled) Whether friends can see the name of previous borrowers in the lending history of an item on its detail page.
 
-The main overview page "recent borrow requests" section is one place where borrows can be approved, but there's also an "all borrow requests" page. Both show borrow requests as a list of items, with the requested item name, the requested borrower's name, and "approve" or "deny" buttons. If a borrow has been approved, then it's in a "pending" state, with an option to mark it as "lent out," indicating that the borrowing has begun. At this point, it no longer appears in a "borrow request" section or page.
+The main overview page "recent borrow requests" section is one place where borrows can be approved, but there's also an "all borrow requests" page. Both show borrow requests as a list of items, with the requested item name, the requested borrower's name, and "approve" or "deny" buttons. (No email notifications - lenders must check their dashboard manually.) If a borrow has been approved, then it's in a "pending" state, with an option to mark it as "lent out," indicating that the borrowing has begun. At this point, it no longer appears in a "borrow request" section or page.
 
 There's views of ongoing lendings: one shortlist on the main logged in landing page, and another in a "all current lendings" page. Both display as a list of borrowed items, who's borrowing, and a "mark as returned" button. Marking an item as returned makes it available for borrowing, thus it will no longer be displayed in an "ongoing lendings" view.
 
@@ -51,9 +53,24 @@ Items acquire the following attributes, but they aren't set by the user:
 
 The design is warm and hobbit-like. Cottagecore friendvibes. Crumbly scones, butter, jam, tea. Polished and well-worn wood. Nooks and crannies filled with delightful bric-brac.
 
+## Authentication & Users
+
+- **Lenders only authenticate** - friends browse via public hash link, no account needed
+- **Username/password auth** - no email system, no forgot password functionality
+- **Registration requires admin approval** - users request access, root approves
+- **Root user** - system administrator created via environment variables (`ROOT_USERNAME`, `ROOT_PASSWORD`) on first startup. Has access to Django admin for user approval and system management.
+- **Users can regenerate their lending hash** if their link gets shared too widely
+
+## Images
+
+- **On-disk storage** for now (S3-compatible storage is a future consideration)
+- **70MB max file size**
+- **4:3 display aspect ratio** - UI should indicate this to users; if feasible, include a cropping UI, otherwise images may appear squashed
+- Supported formats: common web formats (JPEG, PNG, WebP, GIF)
+
 ## Implementation Details
 
-**Stack:** Django + HTMX app. CSS is styled without any libraries. Only modern browsers are targeted. PostgreSQL DB.
+**Stack:** Django + HTMX app. CSS is styled without any libraries. Only modern browsers are targeted (updated within the last year: Firefox, Brave, Chrome). PostgreSQL DB.
 
 **Development:**
 

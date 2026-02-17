@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Stuff for Friends - Share Your Treasures{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Share Your Treasures</h1>
+    <p class="hero-subtitle">A cozy lending library for friends</p>
+</div>
+
+<section class="features">
+    <div class="feature-card">
+        <div class="feature-icon">&#128218;</div>
+        <h3>Your Library</h3>
+        <p>Catalog your books, games, tools, and treasures that you're happy to lend to friends.</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">&#128279;</div>
+        <h3>Secret Link</h3>
+        <p>Share a private link with your friends. Only those with the link can see your collection.</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">&#129309;</div>
+        <h3>Easy Borrowing</h3>
+        <p>Friends request items, you approve, and meet up for the handover. Simple as that.</p>
+    </div>
+</section>
+
+<div class="cta-section">
+    <h2>Ready to start sharing?</h2>
+    <div class="cta-buttons">
+        <a href="#" class="btn btn-primary">Login</a>
+        <a href="#" class="btn btn-secondary">Request Access</a>
+    </div>
+</div>
+{% endblock %}

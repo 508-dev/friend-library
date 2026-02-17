@@ -1,0 +1,45 @@
+# Production: PostgreSQL + Django with WhiteNoise
+# Deploy via Coolify on push to main
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stuff4friends}
+      POSTGRES_USER: ${POSTGRES_USER:-stuff4friends}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-stuff4friends}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  web:
+    build: .
+    environment:
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY is required}
+      - DEBUG=false
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS:-}
+      - POSTGRES_DB=${POSTGRES_DB:-stuff4friends}
+      - POSTGRES_USER=${POSTGRES_USER:-stuff4friends}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - ROOT_USERNAME=${ROOT_USERNAME:-root}
+      - ROOT_PASSWORD=${ROOT_PASSWORD:?ROOT_PASSWORD is required}
+    ports:
+      - "8000:8000"
+    volumes:
+      - media_data:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  media_data:
