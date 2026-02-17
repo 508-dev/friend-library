@@ -15,12 +15,14 @@
             <a href="{% url 'library:home' %}" class="logo">Stuff for Friends</a>
             <nav class="main-nav">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'library:home' %}">Dashboard</a>
-                    <a href="{% url 'admin:index' %}">Admin</a>
-                    <a href="#">Logout</a>
+                    <a href="{% url 'library:dashboard' %}">Dashboard</a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'admin:index' %}">Admin</a>
+                    {% endif %}
+                    <a href="{% url 'library:logout' %}">Logout</a>
                 {% else %}
-                    <a href="#">Login</a>
-                    <a href="#">Register</a>
+                    <a href="{% url 'library:login' %}">Login</a>
+                    <a href="{% url 'library:register' %}">Request Access</a>
                 {% endif %}
             </nav>
         </div>

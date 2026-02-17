@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Request Access - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card card">
+        <div class="card-header">
+            <h2 class="card-title">Request Access</h2>
+            <p class="text-muted">Create an account to start sharing your stuff with friends.</p>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="message message--error">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="form-errors">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                {{ form.password }}
+                {% if form.password.help_text %}
+                    <div class="form-help">{{ form.password.help_text }}</div>
+                {% endif %}
+                {% if form.password.errors %}
+                    <div class="form-errors">
+                        {% for error in form.password.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password_confirm">Confirm Password</label>
+                {{ form.password_confirm }}
+                {% if form.password_confirm.errors %}
+                    <div class="form-errors">{{ form.password_confirm.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Request Access</button>
+        </form>
+
+        <p class="auth-footer">
+            Already have an account? <a href="{% url 'library:login' %}">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Registration Pending - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card card text-center">
+        <div class="pending-icon">&#9749;</div>
+        <h2>Registration Submitted</h2>
+        <p class="mt-md">
+            Your request has been received. Please wait while an admin reviews your registration.
+        </p>
+        <p class="text-muted mt-md">
+            In the meantime, why not have a cup of tea?
+        </p>
+        <a href="{% url 'library:home' %}" class="btn btn-secondary mt-lg">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

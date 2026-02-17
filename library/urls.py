@@ -6,7 +6,16 @@ app_name = "library"
 urlpatterns = [
     # Public pages
     path("", views.home, name="home"),
-    # Auth will be added in phase 2
-    # Lender dashboard will be added in phase 2
+
+    # Authentication
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+    path("register/", views.register_view, name="register"),
+    path("register/pending/", views.registration_pending_view, name="registration_pending"),
+
+    # Dashboard (logged-in users)
+    path("dashboard/", views.dashboard_view, name="dashboard"),
+    path("settings/", views.settings_view, name="settings"),
+
     # Public lending pages will be added in phase 4
 ]

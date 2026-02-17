@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <h1>Your Library</h1>
+        <p class="text-muted">Welcome back, {{ user.username }}</p>
+    </header>
+
+    <section class="lending-url-card card">
+        <h3>Your Lending Page</h3>
+        <p class="text-muted">Share this link with friends so they can browse and borrow your stuff:</p>
+        <div class="url-display">
+            <code id="lending-url">{{ lending_url }}</code>
+            <button type="button" class="btn btn-small btn-secondary" onclick="copyLendingUrl()">Copy</button>
+        </div>
+    </section>
+
+    <div class="dashboard-stats">
+        <div class="stat-card card">
+            <div class="stat-number">{{ total_items }}</div>
+            <div class="stat-label">Total Items</div>
+        </div>
+        <div class="stat-card card">
+            <div class="stat-number">{{ available_items }}</div>
+            <div class="stat-label">Available</div>
+        </div>
+        <div class="stat-card card">
+            <div class="stat-number">{{ borrowed_items }}</div>
+            <div class="stat-label">Lent Out</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">Borrow Requests</h3>
+                {% if recent_requests %}
+                    <a href="#" class="btn btn-small btn-secondary">View All</a>
+                {% endif %}
+            </div>
+            {% if recent_requests %}
+                <ul class="item-list">
+                    {% for borrow in recent_requests %}
+                        <li>
+                            <div>
+                                <strong>{{ borrow.item.title }}</strong>
+                                <span class="text-muted">requested by {{ borrow.borrower_name }}</span>
+                            </div>
+                            <div class="request-actions">
+                                <button class="btn btn-small btn-primary">Approve</button>
+                                <button class="btn btn-small btn-secondary">Deny</button>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">No pending requests</p>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">Pending Pickups</h3>
+            </div>
+            {% if pending_pickups %}
+                <ul class="item-list">
+                    {% for borrow in pending_pickups %}
+                        <li>
+                            <div>
+                                <strong>{{ borrow.item.title }}</strong>
+                                <span class="text-muted">for {{ borrow.borrower_name }}</span>
+                            </div>
+                            <button class="btn btn-small btn-primary">Mark Lent</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">No pending pickups</p>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">Currently Lent Out</h3>
+                {% if current_lendings %}
+                    <a href="#" class="btn btn-small btn-secondary">View All</a>
+                {% endif %}
+            </div>
+            {% if current_lendings %}
+                <ul class="item-list">
+                    {% for borrow in current_lendings %}
+                        <li>
+                            <div>
+                                <strong>{{ borrow.item.title }}</strong>
+                                <span class="text-muted">to {{ borrow.borrower_name }}</span>
+                            </div>
+                            <button class="btn btn-small btn-secondary">Mark Returned</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">Nothing lent out</p>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div class="quick-actions">
+                <a href="#" class="btn btn-primary">Add New Item</a>
+                <a href="#" class="btn btn-secondary">View All Items</a>
+                <a href="{% url 'library:settings' %}" class="btn btn-secondary">Settings</a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyLendingUrl() {
+    const url = document.getElementById('lending-url').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('Link copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}

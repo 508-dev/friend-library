@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <h1>Settings</h1>
+
+    <section class="card mt-lg">
+        <div class="card-header">
+            <h3 class="card-title">Your Lending Link</h3>
+        </div>
+        <p class="text-muted mb-md">This is the link friends use to view your library:</p>
+        <div class="url-display">
+            <code>{{ lending_url }}</code>
+        </div>
+        <form method="post" class="mt-md">
+            {% csrf_token %}
+            <button type="submit" name="regenerate_hash" class="btn btn-secondary btn-small"
+                    onclick="return confirm('Are you sure? Your old link will stop working.')">
+                Regenerate Link
+            </button>
+        </form>
+        <p class="form-help mt-sm">
+            If your link has been shared too widely, you can generate a new one. The old link will stop working.
+        </p>
+    </section>
+
+    <section class="card mt-lg">
+        <div class="card-header">
+            <h3 class="card-title">Privacy Settings</h3>
+        </div>
+        <p class="text-muted mb-md">Control what friends can see on your lending page.</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    {{ form.show_borrowed_items }}
+                    <span>{{ form.show_borrowed_items.label }}</span>
+                </label>
+                <p class="form-help">When enabled, items that are currently borrowed will appear on your lending page.</p>
+            </div>
+
+            <div class="checkbox-group indent" id="show-borrower-group">
+                <label class="checkbox-label">
+                    {{ form.show_borrower_name }}
+                    <span>{{ form.show_borrower_name.label }}</span>
+                </label>
+                <p class="form-help">Show the name of who is currently borrowing each item.</p>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    {{ form.show_lending_history }}
+                    <span>{{ form.show_lending_history.label }}</span>
+                </label>
+                <p class="form-help">When enabled, item detail pages will show the lending history.</p>
+            </div>
+
+            <div class="checkbox-group indent" id="show-history-names-group">
+                <label class="checkbox-label">
+                    {{ form.show_history_borrower_names }}
+                    <span>{{ form.show_history_borrower_names.label }}</span>
+                </label>
+                <p class="form-help">Show borrower names in the lending history.</p>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-md">Save Settings</button>
+        </form>
+    </section>
+
+    <div class="mt-lg">
+        <a href="{% url 'library:dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const showBorrowed = document.getElementById('id_show_borrowed_items');
+    const showBorrowerGroup = document.getElementById('show-borrower-group');
+    const showHistory = document.getElementById('id_show_lending_history');
+    const showHistoryNamesGroup = document.getElementById('show-history-names-group');
+
+    function updateDependentFields() {
+        showBorrowerGroup.style.opacity = showBorrowed.checked ? '1' : '0.5';
+        showBorrowerGroup.querySelector('input').disabled = !showBorrowed.checked;
+
+        showHistoryNamesGroup.style.opacity = showHistory.checked ? '1' : '0.5';
+        showHistoryNamesGroup.querySelector('input').disabled = !showHistory.checked;
+    }
+
+    showBorrowed.addEventListener('change', updateDependentFields);
+    showHistory.addEventListener('change', updateDependentFields);
+    updateDependentFields();
+});
+</script>
+{% endblock %}
