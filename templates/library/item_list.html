@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}My Items - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="items-page">
+    <header class="page-header">
+        <h1>My Items</h1>
+        <a href="{% url 'library:item_add' %}" class="btn btn-primary">Add New Item</a>
+    </header>
+
+    {% if items %}
+        <div class="items-table-wrapper">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td class="item-thumb">
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                                {% else %}
+                                    <div class="no-image">No image</div>
+                                {% endif %}
+                            </td>
+                            <td class="item-info">
+                                <strong>{{ item.title }}</strong>
+                                {% if item.short_description %}
+                                    <p class="text-muted">{{ item.short_description|truncatewords:15 }}</p>
+                                {% endif %}
+                            </td>
+                            <td class="item-status">
+                                {% if item.is_currently_borrowed %}
+                                    <span class="badge badge-borrowed">Lent Out</span>
+                                    {% if item.current_borrow %}
+                                        <span class="text-muted">to {{ item.current_borrow.borrower_name }}</span>
+                                    {% endif %}
+                                {% elif item.is_available %}
+                                    <span class="badge badge-available">Available</span>
+                                {% else %}
+                                    <span class="badge badge-unavailable">Unavailable</span>
+                                {% endif %}
+                            </td>
+                            <td class="item-actions">
+                                <div class="action-buttons">
+                                    {% include "library/partials/item_availability_button.html" %}
+                                    <a href="{% url 'library:item_edit' item.id %}" class="btn btn-small btn-secondary">Edit</a>
+                                    <a href="{% url 'library:item_delete' item.id %}" class="btn btn-small btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state card">
+            <p>You haven't added any items yet.</p>
+            <a href="{% url 'library:item_add' %}" class="btn btn-primary mt-md">Add Your First Item</a>
+        </div>
+    {% endif %}
+
+    <div class="mt-lg">
+        <a href="{% url 'library:dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

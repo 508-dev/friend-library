@@ -111,8 +111,8 @@
                 <h3 class="card-title">Quick Actions</h3>
             </div>
             <div class="quick-actions">
-                <a href="#" class="btn btn-primary">Add New Item</a>
-                <a href="#" class="btn btn-secondary">View All Items</a>
+                <a href="{% url 'library:item_add' %}" class="btn btn-primary">Add New Item</a>
+                <a href="{% url 'library:item_list' %}" class="btn btn-secondary">View All Items</a>
                 <a href="{% url 'library:settings' %}" class="btn btn-secondary">Settings</a>
             </div>
         </section>

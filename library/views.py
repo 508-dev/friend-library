@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponse
 
-from .forms import LoginForm, RegistrationForm, UserSettingsForm
-from .models import Borrow
+from .forms import LoginForm, RegistrationForm, UserSettingsForm, ItemForm
+from .models import Item, Borrow
 
 
 def home(request):
@@ -129,3 +130,80 @@ def settings_view(request):
         "lending_url": request.build_absolute_uri(f"/lend/{user.lending_hash}/"),
     }
     return render(request, "library/settings.html", context)
+
+
+@login_required
+def item_list_view(request):
+    """View all items owned by the current user."""
+    items = request.user.items.all()
+    return render(request, "library/item_list.html", {"items": items})
+
+
+@login_required
+def item_add_view(request):
+    """Add a new item."""
+    if request.method == "POST":
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.owner = request.user
+            item.save()
+            messages.success(request, f'"{item.title}" has been added to your library.')
+            return redirect("library:item_list")
+    else:
+        form = ItemForm()
+
+    return render(request, "library/item_form.html", {
+        "form": form,
+        "is_edit": False,
+    })
+
+
+@login_required
+def item_edit_view(request, item_id):
+    """Edit an existing item."""
+    item = get_object_or_404(Item, id=item_id, owner=request.user)
+
+    if request.method == "POST":
+        form = ItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'"{item.title}" has been updated.')
+            return redirect("library:item_list")
+    else:
+        form = ItemForm(instance=item)
+
+    return render(request, "library/item_form.html", {
+        "form": form,
+        "item": item,
+        "is_edit": True,
+    })
+
+
+@login_required
+def item_delete_view(request, item_id):
+    """Delete an item with confirmation."""
+    item = get_object_or_404(Item, id=item_id, owner=request.user)
+
+    if request.method == "POST":
+        title = item.title
+        item.delete()
+        messages.success(request, f'"{title}" has been removed from your library.')
+        return redirect("library:item_list")
+
+    return render(request, "library/item_delete.html", {"item": item})
+
+
+@login_required
+def item_toggle_availability_view(request, item_id):
+    """Toggle item availability (HTMX endpoint)."""
+    item = get_object_or_404(Item, id=item_id, owner=request.user)
+
+    if request.method == "POST":
+        item.is_available = not item.is_available
+        item.save(update_fields=["is_available"])
+
+        # Return updated button HTML for HTMX swap
+        return render(request, "library/partials/item_availability_button.html", {
+            "item": item,
+        })

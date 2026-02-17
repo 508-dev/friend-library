@@ -17,5 +17,12 @@ urlpatterns = [
     path("dashboard/", views.dashboard_view, name="dashboard"),
     path("settings/", views.settings_view, name="settings"),
 
+    # Item management
+    path("items/", views.item_list_view, name="item_list"),
+    path("items/add/", views.item_add_view, name="item_add"),
+    path("items/<int:item_id>/edit/", views.item_edit_view, name="item_edit"),
+    path("items/<int:item_id>/delete/", views.item_delete_view, name="item_delete"),
+    path("items/<int:item_id>/toggle-availability/", views.item_toggle_availability_view, name="item_toggle_availability"),
+
     # Public lending pages will be added in phase 4
 ]

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ item.title }} - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="delete-page">
+    <div class="card delete-card">
+        <h2>Delete Item</h2>
+
+        <p class="mt-md">Are you sure you want to delete <strong>"{{ item.title }}"</strong>?</p>
+
+        {% if item.image %}
+            <div class="delete-preview mt-md">
+                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+            </div>
+        {% endif %}
+
+        <p class="text-muted mt-md">
+            This action cannot be undone. All borrow history for this item will also be deleted.
+        </p>
+
+        <form method="post" class="mt-lg">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete Item</button>
+                <a href="{% url 'library:item_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

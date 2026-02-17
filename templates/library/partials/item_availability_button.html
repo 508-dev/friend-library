@@ -1,0 +1,13 @@
+<button
+    type="button"
+    class="btn btn-small {% if item.is_available %}btn-secondary{% else %}btn-primary{% endif %}"
+    hx-post="{% url 'library:item_toggle_availability' item.id %}"
+    hx-swap="outerHTML"
+    {% if item.is_currently_borrowed %}disabled title="Cannot change while lent out"{% endif %}
+>
+    {% if item.is_available %}
+        Mark Unavailable
+    {% else %}
+        Mark Available
+    {% endif %}
+</button>
