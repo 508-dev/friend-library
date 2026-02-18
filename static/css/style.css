@@ -1,6 +1,10 @@
 /* Stuff for Friends - Cottagecore Styling
    Warm, hobbit-like, cozy vibes
-   Colors inspired by: tea, jam, butter, worn wood, warm sunlight */
+   Colors inspired by: tea, jam, butter, worn wood, warm sunlight
+   "Crumbly scones, butter, jam, tea. Polished and well-worn wood.
+    Nooks and crannies filled with delightful bric-brac." */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
 
 :root {
     /* Warm earthy palette */
@@ -8,6 +12,7 @@
     --color-butter: #f5e6c8;
     --color-honey: #d4a574;
     --color-jam: #8b4557;
+    --color-jam-dark: #6d3644;
     --color-tea: #6b4423;
     --color-wood: #4a3728;
     --color-wood-dark: #2d1f14;
@@ -19,7 +24,8 @@
 
     /* Typography */
     --font-body: Georgia, 'Times New Roman', serif;
-    --font-heading: Georgia, 'Times New Roman', serif;
+    --font-heading: 'Cormorant Garamond', Georgia, serif;
+    --font-accent: 'Cormorant Garamond', Georgia, serif;
 
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -37,6 +43,7 @@
     --shadow-sm: 0 1px 3px rgba(45, 31, 20, 0.12);
     --shadow-md: 0 4px 6px rgba(45, 31, 20, 0.15);
     --shadow-lg: 0 10px 20px rgba(45, 31, 20, 0.2);
+    --shadow-cozy: 0 2px 8px rgba(45, 31, 20, 0.1), 0 4px 16px rgba(45, 31, 20, 0.08);
 }
 
 /* Reset and base styles */
@@ -72,12 +79,13 @@ body {
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: normal;
+    font-weight: 600;
     line-height: 1.3;
     color: var(--color-wood-dark);
+    letter-spacing: 0.01em;
 }
 
-h1 { font-size: 2.5rem; }
+h1 { font-size: 2.75rem; }
 h2 { font-size: 2rem; }
 h3 { font-size: 1.5rem; }
 
@@ -105,9 +113,12 @@ a:hover {
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-family: var(--font-accent);
+    font-size: 1.75rem;
     color: var(--color-butter);
     font-style: italic;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .logo:hover {
@@ -139,6 +150,25 @@ a:hover {
     text-align: center;
     padding: var(--spacing-xl) 0;
     margin-bottom: var(--spacing-xl);
+    position: relative;
+}
+
+.hero::before {
+    content: '~';
+    display: block;
+    font-size: 2rem;
+    color: var(--color-honey);
+    margin-bottom: var(--spacing-md);
+    letter-spacing: 1rem;
+}
+
+.hero::after {
+    content: '~';
+    display: block;
+    font-size: 2rem;
+    color: var(--color-honey);
+    margin-top: var(--spacing-md);
+    letter-spacing: 1rem;
 }
 
 .hero h1 {
@@ -148,8 +178,10 @@ a:hover {
 }
 
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     color: var(--color-tea);
+    font-family: var(--font-accent);
+    font-style: italic;
 }
 
 /* Features */
@@ -216,16 +248,22 @@ a:hover {
     transition: all 0.2s ease;
     border: 2px solid transparent;
     text-decoration: none;
+    box-shadow: 0 2px 4px rgba(45, 31, 20, 0.1);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(45, 31, 20, 0.1);
 }
 
 .btn-primary {
-    background: var(--color-jam);
+    background: linear-gradient(to bottom, var(--color-jam), var(--color-jam-dark));
     color: var(--color-cream);
-    border-color: var(--color-jam);
+    border-color: var(--color-jam-dark);
 }
 
 .btn-primary:hover {
-    background: var(--color-wood-dark);
+    background: linear-gradient(to bottom, var(--color-jam-dark), var(--color-wood-dark));
     border-color: var(--color-wood-dark);
     color: var(--color-cream);
 }
@@ -265,16 +303,26 @@ a:hover {
 
 /* Footer */
 .site-footer {
-    background: var(--color-wood-dark);
+    background: linear-gradient(to bottom, var(--color-wood), var(--color-wood-dark));
     color: var(--color-butter);
     padding: var(--spacing-lg) 0;
     text-align: center;
     margin-top: auto;
+    border-top: 3px solid var(--color-honey);
 }
 
 .site-footer p {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-style: italic;
+    font-family: var(--font-accent);
+}
+
+.site-footer a {
+    color: var(--color-honey);
+}
+
+.site-footer a:hover {
+    color: var(--color-cream);
 }
 
 /* Messages */
@@ -357,11 +405,24 @@ a:hover {
 
 /* Cards */
 .card {
-    background: var(--color-butter);
+    background: linear-gradient(145deg, var(--color-butter) 0%, #f0debb 100%);
     border: 2px solid var(--color-honey);
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-cozy);
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-honey), var(--color-jam), var(--color-honey));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    opacity: 0.6;
 }
 
 .card-header {
