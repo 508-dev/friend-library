@@ -1,0 +1,38 @@
+{% if just_approved %}
+<li id="dashboard-request-{{ borrow.id }}" class="approved-item">
+    <div>
+        <strong>{{ borrow.item.title }}</strong>
+        <span class="text-muted">approved for {{ borrow.borrower_name }}</span>
+    </div>
+    <span class="badge badge-available">Approved!</span>
+</li>
+{% elif just_denied %}
+<li id="dashboard-request-{{ borrow.id }}" class="denied-item fade-out">
+    <div>
+        <strong>{{ borrow.item.title }}</strong>
+        <span class="text-muted">{{ borrow.borrower_name }}</span>
+    </div>
+    <span class="badge badge-unavailable">Denied</span>
+</li>
+{% else %}
+<li id="dashboard-request-{{ borrow.id }}">
+    <div>
+        <strong>{{ borrow.item.title }}</strong>
+        <span class="text-muted">requested by {{ borrow.borrower_name }}</span>
+    </div>
+    <div class="request-actions">
+        <button class="btn btn-small btn-primary"
+                hx-post="{% url 'library:borrow_approve' borrow.id %}"
+                hx-target="#dashboard-request-{{ borrow.id }}"
+                hx-swap="outerHTML">
+            Approve
+        </button>
+        <button class="btn btn-small btn-secondary"
+                hx-post="{% url 'library:borrow_deny' borrow.id %}"
+                hx-target="#dashboard-request-{{ borrow.id }}"
+                hx-swap="outerHTML">
+            Deny
+        </button>
+    </div>
+</li>
+{% endif %}

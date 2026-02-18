@@ -38,20 +38,30 @@
             <div class="card-header">
                 <h3 class="card-title">Borrow Requests</h3>
                 {% if recent_requests %}
-                    <a href="#" class="btn btn-small btn-secondary">View All</a>
+                    <a href="{% url 'library:borrow_requests' %}" class="btn btn-small btn-secondary">View All</a>
                 {% endif %}
             </div>
             {% if recent_requests %}
-                <ul class="item-list">
+                <ul class="item-list" id="recent-requests">
                     {% for borrow in recent_requests %}
-                        <li>
+                        <li id="dashboard-request-{{ borrow.id }}">
                             <div>
                                 <strong>{{ borrow.item.title }}</strong>
                                 <span class="text-muted">requested by {{ borrow.borrower_name }}</span>
                             </div>
                             <div class="request-actions">
-                                <button class="btn btn-small btn-primary">Approve</button>
-                                <button class="btn btn-small btn-secondary">Deny</button>
+                                <button class="btn btn-small btn-primary"
+                                        hx-post="{% url 'library:borrow_approve' borrow.id %}"
+                                        hx-target="#dashboard-request-{{ borrow.id }}"
+                                        hx-swap="outerHTML">
+                                    Approve
+                                </button>
+                                <button class="btn btn-small btn-secondary"
+                                        hx-post="{% url 'library:borrow_deny' borrow.id %}"
+                                        hx-target="#dashboard-request-{{ borrow.id }}"
+                                        hx-swap="outerHTML">
+                                    Deny
+                                </button>
                             </div>
                         </li>
                     {% endfor %}
@@ -68,12 +78,17 @@
             {% if pending_pickups %}
                 <ul class="item-list">
                     {% for borrow in pending_pickups %}
-                        <li>
+                        <li id="dashboard-pickup-{{ borrow.id }}">
                             <div>
                                 <strong>{{ borrow.item.title }}</strong>
                                 <span class="text-muted">for {{ borrow.borrower_name }}</span>
                             </div>
-                            <button class="btn btn-small btn-primary">Mark Lent</button>
+                            <button class="btn btn-small btn-primary"
+                                    hx-post="{% url 'library:borrow_mark_lent' borrow.id %}"
+                                    hx-target="#dashboard-pickup-{{ borrow.id }}"
+                                    hx-swap="outerHTML">
+                                Mark Lent
+                            </button>
                         </li>
                     {% endfor %}
                 </ul>
@@ -86,18 +101,23 @@
             <div class="card-header">
                 <h3 class="card-title">Currently Lent Out</h3>
                 {% if current_lendings %}
-                    <a href="#" class="btn btn-small btn-secondary">View All</a>
+                    <a href="{% url 'library:current_lendings' %}" class="btn btn-small btn-secondary">View All</a>
                 {% endif %}
             </div>
             {% if current_lendings %}
                 <ul class="item-list">
                     {% for borrow in current_lendings %}
-                        <li>
+                        <li id="dashboard-lending-{{ borrow.id }}">
                             <div>
                                 <strong>{{ borrow.item.title }}</strong>
                                 <span class="text-muted">to {{ borrow.borrower_name }}</span>
                             </div>
-                            <button class="btn btn-small btn-secondary">Mark Returned</button>
+                            <button class="btn btn-small btn-secondary"
+                                    hx-post="{% url 'library:borrow_mark_returned' borrow.id %}"
+                                    hx-target="#dashboard-lending-{{ borrow.id }}"
+                                    hx-swap="outerHTML">
+                                Mark Returned
+                            </button>
                         </li>
                     {% endfor %}
                 </ul>

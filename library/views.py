@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
+from django.utils import timezone
 
 from .forms import LoginForm, RegistrationForm, UserSettingsForm, ItemForm
 from .models import User, Item, Borrow
@@ -337,3 +338,152 @@ def public_request_borrow(request, lending_hash, item_id):
             "borrower_name": borrower_name,
             "just_requested": True,
         })
+
+
+# =============================================================================
+# Borrow Management (logged-in owner actions)
+# =============================================================================
+
+@login_required
+def borrow_requests_view(request):
+    """View all pending borrow requests."""
+    requests = Borrow.objects.filter(
+        item__owner=request.user,
+        status=Borrow.Status.REQUESTED,
+    ).select_related("item").order_by("-requested_at")
+
+    return render(request, "library/borrow_requests.html", {"requests": requests})
+
+
+def _is_dashboard_request(request):
+    """Check if HTMX request originated from the dashboard."""
+    current_url = request.headers.get("HX-Current-URL", "")
+    return "/dashboard" in current_url
+
+
+@login_required
+def borrow_approve_view(request, borrow_id):
+    """Approve a borrow request (HTMX endpoint)."""
+    borrow = get_object_or_404(
+        Borrow,
+        id=borrow_id,
+        item__owner=request.user,
+        status=Borrow.Status.REQUESTED,
+    )
+
+    if request.method == "POST":
+        borrow.status = Borrow.Status.APPROVED
+        borrow.approved_at = timezone.now()
+        borrow.save(update_fields=["status", "approved_at"])
+
+        if _is_dashboard_request(request):
+            return render(request, "library/partials/dashboard_request_item.html", {
+                "borrow": borrow,
+                "just_approved": True,
+            })
+
+        return render(request, "library/partials/borrow_row.html", {
+            "borrow": borrow,
+            "show_actions": True,
+        })
+
+
+@login_required
+def borrow_deny_view(request, borrow_id):
+    """Deny a borrow request (HTMX endpoint)."""
+    borrow = get_object_or_404(
+        Borrow,
+        id=borrow_id,
+        item__owner=request.user,
+        status=Borrow.Status.REQUESTED,
+    )
+
+    if request.method == "POST":
+        borrow.status = Borrow.Status.DENIED
+        borrow.save(update_fields=["status"])
+
+        if _is_dashboard_request(request):
+            return render(request, "library/partials/dashboard_request_item.html", {
+                "borrow": borrow,
+                "just_denied": True,
+            })
+
+        return render(request, "library/partials/borrow_row.html", {
+            "borrow": borrow,
+            "show_actions": False,
+            "just_denied": True,
+        })
+
+
+@login_required
+def borrow_mark_lent_view(request, borrow_id):
+    """Mark an approved borrow as lent out (HTMX endpoint)."""
+    borrow = get_object_or_404(
+        Borrow,
+        id=borrow_id,
+        item__owner=request.user,
+        status=Borrow.Status.APPROVED,
+    )
+
+    if request.method == "POST":
+        borrow.status = Borrow.Status.LENT_OUT
+        borrow.lent_at = timezone.now()
+        borrow.save(update_fields=["status", "lent_at"])
+
+        if _is_dashboard_request(request):
+            return render(request, "library/partials/dashboard_pickup_item.html", {
+                "borrow": borrow,
+                "just_lent": True,
+            })
+
+        return render(request, "library/partials/borrow_row.html", {
+            "borrow": borrow,
+            "show_actions": True,
+        })
+
+
+@login_required
+def borrow_mark_returned_view(request, borrow_id):
+    """Mark a lent item as returned (HTMX endpoint)."""
+    borrow = get_object_or_404(
+        Borrow,
+        id=borrow_id,
+        item__owner=request.user,
+        status=Borrow.Status.LENT_OUT,
+    )
+
+    if request.method == "POST":
+        borrow.status = Borrow.Status.RETURNED
+        borrow.returned_at = timezone.now()
+        borrow.save(update_fields=["status", "returned_at"])
+
+        if _is_dashboard_request(request):
+            return render(request, "library/partials/dashboard_lending_item.html", {
+                "borrow": borrow,
+                "just_returned": True,
+            })
+
+        return render(request, "library/partials/borrow_row.html", {
+            "borrow": borrow,
+            "show_actions": False,
+            "just_returned": True,
+        })
+
+
+@login_required
+def current_lendings_view(request):
+    """View all current lendings (approved + lent out)."""
+    pending_pickups = Borrow.objects.filter(
+        item__owner=request.user,
+        status=Borrow.Status.APPROVED,
+    ).select_related("item").order_by("-approved_at")
+
+    lent_out = Borrow.objects.filter(
+        item__owner=request.user,
+        status=Borrow.Status.LENT_OUT,
+    ).select_related("item").order_by("-lent_at")
+
+    return render(request, "library/current_lendings.html", {
+        "pending_pickups": pending_pickups,
+        "lent_out": lent_out,
+    })

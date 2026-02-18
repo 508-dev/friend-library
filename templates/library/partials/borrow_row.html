@@ -1,0 +1,61 @@
+<tr id="borrow-{{ borrow.id }}" {% if just_denied or just_returned %}class="fade-out"{% endif %}>
+    <td>
+        <strong>{{ borrow.item.title }}</strong>
+    </td>
+    <td>{{ borrow.borrower_name }}</td>
+    <td class="text-muted">
+        {% if borrow.status == 'requested' %}
+            {{ borrow.requested_at|date:"M j, Y" }}
+        {% elif borrow.status == 'approved' %}
+            {{ borrow.approved_at|date:"M j, Y" }}
+        {% elif borrow.status == 'lent_out' %}
+            {{ borrow.lent_at|date:"M j, Y" }}
+        {% elif borrow.status == 'returned' %}
+            {{ borrow.returned_at|date:"M j, Y" }}
+        {% elif borrow.status == 'denied' %}
+            Denied
+        {% endif %}
+    </td>
+    <td>
+        {% if show_actions %}
+            {% if borrow.status == 'requested' %}
+                <div class="action-buttons">
+                    <button class="btn btn-small btn-primary"
+                            hx-post="{% url 'library:borrow_approve' borrow.id %}"
+                            hx-target="#borrow-{{ borrow.id }}"
+                            hx-swap="outerHTML">
+                        Approve
+                    </button>
+                    <button class="btn btn-small btn-secondary"
+                            hx-post="{% url 'library:borrow_deny' borrow.id %}"
+                            hx-target="#borrow-{{ borrow.id }}"
+                            hx-swap="outerHTML">
+                        Deny
+                    </button>
+                </div>
+            {% elif borrow.status == 'approved' %}
+                <button class="btn btn-small btn-primary"
+                        hx-post="{% url 'library:borrow_mark_lent' borrow.id %}"
+                        hx-target="#borrow-{{ borrow.id }}"
+                        hx-swap="outerHTML">
+                    Mark Lent
+                </button>
+            {% elif borrow.status == 'lent_out' %}
+                <button class="btn btn-small btn-primary"
+                        hx-post="{% url 'library:borrow_mark_returned' borrow.id %}"
+                        hx-target="#borrow-{{ borrow.id }}"
+                        hx-swap="outerHTML">
+                    Mark Returned
+                </button>
+            {% endif %}
+        {% endif %}
+
+        {% if just_denied %}
+            <span class="badge badge-unavailable">Denied</span>
+        {% endif %}
+
+        {% if just_returned %}
+            <span class="badge badge-available">Returned!</span>
+        {% endif %}
+    </td>
+</tr>

@@ -1,0 +1,22 @@
+{% if just_lent %}
+<li id="dashboard-pickup-{{ borrow.id }}" class="lent-item">
+    <div>
+        <strong>{{ borrow.item.title }}</strong>
+        <span class="text-muted">now with {{ borrow.borrower_name }}</span>
+    </div>
+    <span class="badge badge-borrowed">Lent Out!</span>
+</li>
+{% else %}
+<li id="dashboard-pickup-{{ borrow.id }}">
+    <div>
+        <strong>{{ borrow.item.title }}</strong>
+        <span class="text-muted">for {{ borrow.borrower_name }}</span>
+    </div>
+    <button class="btn btn-small btn-primary"
+            hx-post="{% url 'library:borrow_mark_lent' borrow.id %}"
+            hx-target="#dashboard-pickup-{{ borrow.id }}"
+            hx-swap="outerHTML">
+        Mark Lent
+    </button>
+</li>
+{% endif %}

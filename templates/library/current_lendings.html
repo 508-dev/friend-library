@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Current Lendings - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="current-lendings-page">
+    <header class="page-header">
+        <h1>Current Lendings</h1>
+        <a href="{% url 'library:dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </header>
+
+    {% if pending_pickups %}
+        <section class="card mb-lg">
+            <div class="card-header">
+                <h3 class="card-title">Pending Pickups</h3>
+            </div>
+            <p class="text-muted mb-md">Approved requests waiting to be picked up</p>
+            <table class="borrow-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Borrower</th>
+                        <th>Approved</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for borrow in pending_pickups %}
+                        {% include "library/partials/borrow_row.html" with show_actions=True %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %}
+
+    {% if lent_out %}
+        <section class="card">
+            <div class="card-header">
+                <h3 class="card-title">Currently Lent Out</h3>
+            </div>
+            <table class="borrow-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Borrower</th>
+                        <th>Lent</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for borrow in lent_out %}
+                        {% include "library/partials/borrow_row.html" with show_actions=True %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %}
+
+    {% if not pending_pickups and not lent_out %}
+        <div class="empty-state card">
+            <p>Nothing currently lent out.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Borrow Requests - Stuff for Friends{% endblock %}
+
+{% block content %}
+<div class="borrow-requests-page">
+    <header class="page-header">
+        <h1>Borrow Requests</h1>
+        <a href="{% url 'library:dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </header>
+
+    {% if requests %}
+        <div class="card">
+            <table class="borrow-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Requested By</th>
+                        <th>Requested</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="requests-list">
+                    {% for borrow in requests %}
+                        {% include "library/partials/borrow_row.html" with show_actions=True %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state card">
+            <p>No pending borrow requests.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

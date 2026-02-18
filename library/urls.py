@@ -24,6 +24,14 @@ urlpatterns = [
     path("items/<int:item_id>/delete/", views.item_delete_view, name="item_delete"),
     path("items/<int:item_id>/toggle-availability/", views.item_toggle_availability_view, name="item_toggle_availability"),
 
+    # Borrow management
+    path("requests/", views.borrow_requests_view, name="borrow_requests"),
+    path("lendings/", views.current_lendings_view, name="current_lendings"),
+    path("borrow/<int:borrow_id>/approve/", views.borrow_approve_view, name="borrow_approve"),
+    path("borrow/<int:borrow_id>/deny/", views.borrow_deny_view, name="borrow_deny"),
+    path("borrow/<int:borrow_id>/mark-lent/", views.borrow_mark_lent_view, name="borrow_mark_lent"),
+    path("borrow/<int:borrow_id>/mark-returned/", views.borrow_mark_returned_view, name="borrow_mark_returned"),
+
     # Public lending pages (no login required)
     path("lend/<str:lending_hash>/", views.public_lending_page, name="public_lending"),
     path("lend/<str:lending_hash>/set-name/", views.public_set_borrower_name, name="public_set_name"),

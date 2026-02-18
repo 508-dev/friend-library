@@ -1,0 +1,22 @@
+{% if just_returned %}
+<li id="dashboard-lending-{{ borrow.id }}" class="returned-item fade-out">
+    <div>
+        <strong>{{ borrow.item.title }}</strong>
+        <span class="text-muted">returned by {{ borrow.borrower_name }}</span>
+    </div>
+    <span class="badge badge-available">Returned!</span>
+</li>
+{% else %}
+<li id="dashboard-lending-{{ borrow.id }}">
+    <div>
+        <strong>{{ borrow.item.title }}</strong>
+        <span class="text-muted">to {{ borrow.borrower_name }}</span>
+    </div>
+    <button class="btn btn-small btn-secondary"
+            hx-post="{% url 'library:borrow_mark_returned' borrow.id %}"
+            hx-target="#dashboard-lending-{{ borrow.id }}"
+            hx-swap="outerHTML">
+        Mark Returned
+    </button>
+</li>
+{% endif %}

@@ -803,6 +803,53 @@ a:hover {
     border: 2px solid var(--color-honey);
 }
 
+/* Borrow management */
+.borrow-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.borrow-table th,
+.borrow-table td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--color-honey);
+}
+
+.borrow-table th {
+    color: var(--color-tea);
+    font-weight: normal;
+    background: rgba(212, 165, 116, 0.2);
+}
+
+.borrow-table tr:last-child td {
+    border-bottom: none;
+}
+
+.borrow-table tr:hover {
+    background: rgba(212, 165, 116, 0.1);
+}
+
+.approved-item,
+.lent-item {
+    background: rgba(93, 122, 93, 0.1);
+}
+
+.denied-item,
+.returned-item {
+    background: rgba(212, 165, 116, 0.2);
+}
+
+.fade-out {
+    animation: fadeOut 3s ease forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
 /* Public lending pages */
 .public-page {
     background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-butter) 100%);
