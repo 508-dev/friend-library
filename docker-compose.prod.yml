@@ -12,7 +12,7 @@ services:
       - ROOT_USERNAME=${ROOT_USERNAME:-root}
       - ROOT_PASSWORD=${ROOT_PASSWORD:?ROOT_PASSWORD is required}
     ports:
-      - "8000:8000"
+      - "9999:8000"
     volumes:
       - media_data:/app/media
     restart: unless-stopped
