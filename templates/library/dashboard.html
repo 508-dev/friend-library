@@ -15,6 +15,7 @@
         <div class="url-display">
             <code id="lending-url">{{ lending_url }}</code>
             <button type="button" class="btn btn-small btn-secondary" onclick="copyLendingUrl()">Copy</button>
+            <span id="copy-confirm" class="text-muted" style="display: none;">Copied!</span>
         </div>
     </section>
 
@@ -147,7 +148,9 @@
 function copyLendingUrl() {
     const url = document.getElementById('lending-url').textContent;
     navigator.clipboard.writeText(url).then(() => {
-        alert('Link copied to clipboard!');
+        const confirm = document.getElementById('copy-confirm');
+        confirm.style.display = 'inline';
+        setTimeout(() => confirm.style.display = 'none', 2000);
     });
 }
 </script>
