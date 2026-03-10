@@ -21,9 +21,6 @@ A cozy lending library for sharing your stuff with friends. List your books, gam
 ## Development Setup
 
 ```bash
-# Start PostgreSQL
-docker compose up -d
-
 # Set up Python environment
 python -m venv .venv
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
