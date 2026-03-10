@@ -1,6 +1,5 @@
 # Core
 django>=5.1,<6.0
-psycopg[binary]>=3.2,<4.0
 django-htmx>=1.21,<2.0
 whitenoise>=6.8,<7.0
 pillow>=11.0,<12.0

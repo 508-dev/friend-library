@@ -68,12 +68,8 @@ WSGI_APPLICATION = "stuff4friends.wsgi.application"
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB", "stuff4friends"),
-        "USER": os.environ.get("POSTGRES_USER", "stuff4friends"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "stuff4friends"),
-        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
