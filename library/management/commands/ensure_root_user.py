@@ -27,9 +27,12 @@ class Command(BaseCommand):
             )
             return
 
-        if User.objects.filter(username=username).exists():
+        user = User.objects.filter(username=username).first()
+        if user:
+            user.set_password(password)
+            user.save()
             self.stdout.write(
-                self.style.SUCCESS(f"Root user '{username}' already exists.")
+                self.style.SUCCESS(f"Root user '{username}' password updated.")
             )
             return
 
