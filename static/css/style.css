@@ -68,6 +68,16 @@ body {
     flex-direction: column;
 }
 
+.callout {
+  color: var(--color-butter);
+  font-size: 0.95rem;
+}
+.callout a {
+    color: var(--color-butter);
+    font-size: 0.95rem;
+    text-decoration: underline;
+}
+
 /* Container */
 .container {
     width: 100%;

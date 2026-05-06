@@ -12,7 +12,7 @@
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <header class="site-header">
         <div class="container">
-            <a href="{% url 'library:home' %}" class="logo">Stuff for Friends</a>
+          <a href="{% url 'library:home' %}" class="logo">Stuff for Friends</a> - <span class="callout"><a href="https://github.com/508-dev/friend-library">Code</a> by <a href="https://508.dev">508.dev</a></span>
             <nav class="main-nav">
                 {% if user.is_authenticated %}
                     <a href="{% url 'library:dashboard' %}">Dashboard</a>
